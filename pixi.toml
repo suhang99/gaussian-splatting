@@ -1,0 +1,32 @@
+[project]
+channels = ["nvidia/label/cuda-12.4.0", "nvidia", "conda-forge", "pytorch"]
+description = "Add a short description here"
+name = "gaussian-splatting"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+cuda = {version = "*", channel="nvidia/label/cuda-12.4.0"}
+pytorch = {version = "2.5.0.*", channel="pytorch"}
+torchvision = {version = "0.20.0.*", channel="pytorch"}
+torchaudio = {version = "2.5.0.*", channel="pytorch"}
+pytorch-cuda = {version = "12.4.*", channel="pytorch"}
+python = "3.9.*"
+setuptools = "*"
+plyfile = ">=1.1,<2"
+opencv = ">=4.6.0,<5"
+tqdm = ">=4.67.1,<5"
+gxx = "12.4"
+scipy = ">=1.13.1,<2"
+mediapy = ">=1.2.2,<2"
+
+[pypi-options]
+no-build-isolation = ["diff-gaussian-rasterization", "simple-knn", "fused-ssim"]
+
+
+[pypi-dependencies]
+diff-gaussian-rasterization = {path = "submodules/diff-gaussian-rasterization"}
+simple-knn = {path = "submodules/simple-knn"}
+fused-ssim = {path = "submodules/fused-ssim"}
