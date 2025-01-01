@@ -14,6 +14,7 @@ import numpy as np
 from utils.graphics_utils import fov2focal
 from PIL import Image
 import cv2
+import os
 
 WARNED = False
 
@@ -70,7 +71,8 @@ def cameraList_from_camInfos(cam_infos, resolution_scale, args, is_nerf_syntheti
     camera_list = []
 
     for id, c in enumerate(cam_infos):
-        camera_list.append(loadCam(args, id, c, resolution_scale, is_nerf_synthetic, is_test_dataset))
+        if os.path.exists(c.image_path):
+            camera_list.append(loadCam(args, id, c, resolution_scale, is_nerf_synthetic, is_test_dataset))
 
     return camera_list
 

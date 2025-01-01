@@ -12,7 +12,7 @@
 import torch
 import numpy as np
 from scipy.spatial.transform import Rotation, Slerp
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, CubicSpline
 import mediapy as media
 from PIL import Image
 from scene import Scene
@@ -56,7 +56,8 @@ def render_sets(dataset : ModelParams, iteration : int, pipeline : PipelineParam
         llffhold = 8
         views = []
         train_id, test_id= 0, 0
-        for view_id in range(len(train_views) + len(test_views)):
+        # Drop the last 10% views (since their trajectory is not smooth)
+        for view_id in range(int((len(train_views) + len(test_views)) * 0.9)):
             if view_id % llffhold == 0:
                 if test_id < len(test_views):
                     views.append(test_views[test_id])
@@ -88,7 +89,7 @@ def render_sets(dataset : ModelParams, iteration : int, pipeline : PipelineParam
         makedirs(render_path, exist_ok=True)
         
         # Perform pose interpolation
-        translation_interp = interp1d(np.arange(len(views)), np.array([view.T for view in views]), axis=0, kind='linear')
+        translation_interp = CubicSpline(np.arange(len(views)), np.array([view.T for view in views]), axis=0)
         rotation_interp = Slerp(np.arange(len(views)), Rotation.from_matrix([view.R for view in views]))
 
         # Compute interpolate times
@@ -148,7 +149,7 @@ if __name__ == "__main__":
     model = ModelParams(parser, sentinel=True)
     pipeline = PipelineParams(parser)
     parser.add_argument("--iteration", default=30000, type=int)
-    parser.add_argument("--interp_step", default=0.1, type=int, help="Interpolation step between views in meters")
+    parser.add_argument("--interp_step", default=0.05, type=int, help="Interpolation step between views in meters")
     parser.add_argument("--quiet", action="store_true")
     args = get_combined_args(parser)
     print("Rendering " + args.model_path)
